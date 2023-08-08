@@ -45,7 +45,7 @@
 
 <div id="invoice" style="display: none;">
   <h2>Fatura</h2>
-  <p id="bankMessage">Seu saldo no Banco do Tonho é: R$ <span id="currentValue">1000</span></p>
+  <p id="bankMessage">Seu saldo no Banco do Tonho é: R$ <span id="currentValue">1000.00</span></p>
   <label for="storeName">Nome da Loja/Produto:</label>
   <input type="text" id="storeName" required>
   <label for="subtractionAmount">Subtrair valor:</label>
@@ -59,9 +59,13 @@
   <ul id="activityLog"></ul>
 </div>
 
+<div>
+  <button type="button" id="clearCacheButton">Limpar Registro em Cache</button>
+</div>
+
 <script>
   const correctPassword = "231020"; // Senha correta
-  let currentValue = 1000; // Valor inicial da fatura
+  let currentValue = JSON.parse(localStorage.getItem("currentValue")) || 1000; // Valor inicial da fatura
   let activityData = JSON.parse(localStorage.getItem("activityData")) || [];
 
   const passwordForm = document.getElementById("accessForm");
@@ -76,6 +80,7 @@
   const bankMessage = document.getElementById("bankMessage");
   const loveMessage = document.getElementById("loveMessage");
   const logSection = document.getElementById("log");
+  const clearCacheButton = document.getElementById("clearCacheButton");
 
   submitButton.addEventListener("click", () => {
     if (passwordInput.value === correctPassword) {
@@ -107,6 +112,18 @@
     }
   });
 
+  clearCacheButton.addEventListener("click", () => {
+    if (confirm("Tem certeza que deseja limpar o registro em cache? Isso irá apagar todos os dados armazenados.")) {
+      localStorage.removeItem("activityData");
+      localStorage.removeItem("currentValue");
+      currentValue = 1000;
+      currentValueSpan.textContent = "1000.00";
+      activityData = [];
+      activityLog.innerHTML = "";
+      alert("Registro em cache limpo com sucesso.");
+    }
+  });
+
   function updateActivityLog() {
     activityLog.innerHTML = "";
     activityData.forEach(entry => {
@@ -118,6 +135,8 @@
 
   function saveActivityData() {
     localStorage.setItem("activityData", JSON.stringify(activityData));
+    localStorage.setItem("currentValue", JSON.stringify(currentValue));
+    currentValueSpan.textContent = currentValue.toFixed(2);
   }
 </script>
 
